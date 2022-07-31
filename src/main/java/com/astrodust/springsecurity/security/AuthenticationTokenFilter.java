@@ -1,6 +1,6 @@
 package com.astrodust.springsecurity.security;
 
-import com.astrodust.springsecurity.service.JwtUserDetailsServiceImp;
+import com.astrodust.springsecurity.service.UserDetailsServiceImp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
     private JwtUtils jwtUtils;
 
     @Autowired
-    private JwtUserDetailsServiceImp userDetailsService;
+    private UserDetailsServiceImp userDetailsService;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationTokenFilter.class);
 
@@ -38,6 +38,8 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                // 3 params constructor which set
+                // it sets super.setAuthenticated(true) in that constructor.
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );

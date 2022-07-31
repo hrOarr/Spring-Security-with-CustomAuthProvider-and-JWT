@@ -20,9 +20,9 @@ public class JwtUtils {
     private int jwtExpiration;
 
     public String generateJwtToken(Authentication authentication) {
-        UserDetailsImp userDetails = (UserDetailsImp) authentication.getPrincipal();
+        String username = (String) authentication.getPrincipal();
         return Jwts.builder()
-                .setSubject((userDetails.getUsername()))
+                .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpiration))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)

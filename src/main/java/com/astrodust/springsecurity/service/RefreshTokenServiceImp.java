@@ -31,9 +31,9 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
     }
 
     @Override
-    public RefreshToken createRefreshToken(int userId) {
+    public RefreshToken createRefreshToken(String username) {
         RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setUser(userRepository.findById(userId).orElse(null));
+        refreshToken.setUser(userRepository.findByUsername(username));
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDuration));
         refreshToken.setToken(UUID.randomUUID().toString());
         return refreshTokenRepository.save(refreshToken);

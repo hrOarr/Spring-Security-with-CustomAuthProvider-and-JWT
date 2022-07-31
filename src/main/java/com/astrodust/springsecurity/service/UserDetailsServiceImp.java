@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class JwtUserDetailsServiceImp implements UserDetailsService {
+public class UserDetailsServiceImp implements UserDetailsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtUserDetailsServiceImp.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImp.class);
 
     @Autowired
     private UserService userService;
