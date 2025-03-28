@@ -5,7 +5,7 @@ import com.astrodust.springsecurity.exception.RefreshTokenException;
 import com.astrodust.springsecurity.repository.RefreshTokenRepository;
 import com.astrodust.springsecurity.repository.UserRepository;
 import com.astrodust.springsecurity.service.interfaces.RefreshTokenService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +14,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class RefreshTokenServiceImp implements RefreshTokenService {
 
     @Value("${app.jwtRefreshExpirationMs}")
     private Long refreshTokenDuration;
 
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Optional<RefreshToken> findByToken(String token) {
@@ -31,7 +29,7 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
     }
 
     @Override
-    public RefreshToken createRefreshToken(String username) {
+    public RefreshToken generate(String username) {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(userRepository.findByUsername(username));
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDuration));
@@ -46,10 +44,5 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
             throw new RefreshTokenException(token.getToken(), "Refresh token was expired. Please make a new signin request");
         }
         return token;
-    }
-
-    @Override
-    public void deleteByUserId(int userId) {
-        refreshTokenRepository.deleteByUser(userRepository.findById(userId));
     }
 }

@@ -1,48 +1,45 @@
 package com.astrodust.springsecurity.security;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(
-        // securedEnabled = true,
+@EnableMethodSecurity(
+         securedEnabled = true,
+        prePostEnabled = true
         // jsr250Enabled = true,
-        prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
+        // prePostEnabled = true
+     )
+@RequiredArgsConstructor
+public class WebSecurityConfig {
 
-    @Autowired
-    private JwtAuthenticationProvider jwtAuthenticationProvider;
-
-    @Autowired
-    private GoogleCloudAuthenticationProvider googleCloudAuthenticationProvider;
+    private final JwtAuthenticationProvider jwtAuthenticationProvider;
+    private final GoogleCloudAuthenticationProvider googleCloudAuthenticationProvider;
 
     @Value("${spring.h2.console.path}")
     private String h2ConsolePath;
 
-    @Autowired
-    private AuthenticationTokenFilter jwtRequestFilter;
-
-    @Autowired
-    private AuthenticationEntryPoint authenticationEntryPoint;
+    private final AuthenticationTokenFilter jwtRequestFilter;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
 
     private static final String[] AUTH_WHITELIST = {
             // -- Swagger UI v2
@@ -60,54 +57,39 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     };
 
     @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public AuthenticationManager authenticationManager(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        return authenticationManagerBuilder.authenticationProvider(jwtAuthenticationProvider)
+                .authenticationProvider(googleCloudAuthenticationProvider).build();
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        logger.info("Start of configure->auth method-----------");
-        auth.authenticationProvider(jwtAuthenticationProvider)
-            .authenticationProvider(googleCloudAuthenticationProvider);
-    }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
+                        authorizationManagerRequestMatcherRegistry.requestMatchers(AUTH_WHITELIST).permitAll()
+                                .requestMatchers(h2ConsolePath + "/**").permitAll()
+                                .anyRequest().authenticated())
+                .sessionManagement(httpSecuritySessionManagementConfigurer ->
+                        httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
+                        httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint))
+                        .headers(httpSecurityHeadersConfigurer ->
+                                httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .authenticationProvider(jwtAuthenticationProvider).authenticationProvider(googleCloudAuthenticationProvider)
+                .httpBasic(Customizer.withDefaults());
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        logger.info("Start of configure->http method-----------");
-        http.cors().and().csrf().disable()
-                .authorizeRequests()
-                .antMatchers(AUTH_WHITELIST).permitAll()
-                .antMatchers(h2ConsolePath + "/**").permitAll()
-                .anyRequest().authenticated().and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
-
-        http.headers().frameOptions().sameOrigin();
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
     }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(Arrays.asList("*"));
-        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT"));
-        corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
+        corsConfiguration.setAllowedOrigins(List.of("*"));
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "DELETE", "PUT"));
+        corsConfiguration.setAllowedHeaders(List.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
     }
-
-//    @Bean
-//    @Override
-//    public UserDetailsService userDetailsService() {
-//
-//        UserDetails user =
-//                User.withUsername("user")
-//                        .password(passwordEncoder().encode("password"))
-//                        .roles("USER")
-//                        .build();
-//
-//        return new InMemoryUserDetailsManager(user);
-//    }
 }

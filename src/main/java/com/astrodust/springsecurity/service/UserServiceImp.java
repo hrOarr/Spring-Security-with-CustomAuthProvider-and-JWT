@@ -3,17 +3,14 @@ package com.astrodust.springsecurity.service;
 import com.astrodust.springsecurity.entity.User;
 import com.astrodust.springsecurity.repository.UserRepository;
 import com.astrodust.springsecurity.service.interfaces.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-
 @Service
-@Transactional
+@RequiredArgsConstructor
 public class UserServiceImp implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public User saveOrUpdate(User user) {

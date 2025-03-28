@@ -1,9 +1,9 @@
 package com.astrodust.springsecurity.entity;
 
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -7,10 +7,11 @@ import com.astrodust.springsecurity.entity.RefreshToken;
 import com.astrodust.springsecurity.exception.RefreshTokenException;
 import com.astrodust.springsecurity.security.JwtUtils;
 import com.astrodust.springsecurity.service.interfaces.RefreshTokenService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,24 +24,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/api/v1/auth")
-public class AuthController {
+@RequiredArgsConstructor
+public class AuthenticationController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private RefreshTokenService refreshTokenService;
-
-    @Autowired
-    private JwtUtils jwtUtils;
+    private final AuthenticationManager authenticationManager;
+    private final RefreshTokenService refreshTokenService;
+    private final JwtUtils jwtUtils;
 
     @PostMapping(value = "/login", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<JSONObject> authenticateUser(@RequestBody LoginDto loginDto) {
-        logger.info("SoA:: Login method");
+        log.info("Into Login Method:: loginDto={}", loginDto);
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
 
@@ -48,7 +44,7 @@ public class AuthController {
         String jwtToken = jwtUtils.generateJwtToken(authentication);
 
         String username = (String) authentication.getPrincipal();
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(username);
+        RefreshToken refreshToken = refreshTokenService.generate(username);
 
         JSONObject jsonObject = new JSONObject();
         JwtResponseDto jwtResponseDto = new JwtResponseDto();
@@ -62,7 +58,7 @@ public class AuthController {
     @PostMapping(value = "/refresh-token")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenDto refreshTokenDto) {
         String refreshToken = refreshTokenDto.getRefreshToken();
-        logger.info("SoA:: I am Refresh");
+        log.info("SoA:: I am Refresh");
         return refreshTokenService.findByToken(refreshToken)
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
