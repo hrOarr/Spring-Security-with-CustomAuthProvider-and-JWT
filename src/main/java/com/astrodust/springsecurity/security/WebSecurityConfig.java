@@ -39,7 +39,7 @@ public class WebSecurityConfig {
     @Value("${spring.h2.console.path}")
     private String h2ConsolePath;
 
-    private final AuthenticationTokenFilter jwtRequestFilter;
+    private final AuthenticationTokenFilter authenticationTokenFilter;
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
     private static final String[] AUTH_WHITELIST = {
@@ -75,8 +75,7 @@ public class WebSecurityConfig {
                         httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint))
                         .headers(httpSecurityHeadersConfigurer ->
                                 httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-                                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-                .authenticationProvider(daoAuthenticationProvider).authenticationProvider(googleCloudAuthenticationProvider)
+                                .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
