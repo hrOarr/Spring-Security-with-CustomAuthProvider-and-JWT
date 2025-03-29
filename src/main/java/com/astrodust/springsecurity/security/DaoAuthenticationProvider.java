@@ -1,9 +1,8 @@
 package com.astrodust.springsecurity.security;
 
-import com.astrodust.springsecurity.service.UserDetailsServiceImp;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.astrodust.springsecurity.service.UserService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,28 +12,24 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
-public class JwtAuthenticationProvider implements AuthenticationProvider {
+@RequiredArgsConstructor
+public class DaoAuthenticationProvider implements AuthenticationProvider {
 
-    private final static Logger logger = LoggerFactory.getLogger(JwtAuthenticationProvider.class);
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserDetailsServiceImp userDetailsServiceImp;
+    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = (String) authentication.getPrincipal();
         String password = (String) authentication.getCredentials();
-        logger.info("SoA:: username = " + username + " and password = " + password);
-        UserDetails userDetails = userDetailsServiceImp.loadUserByUsername(username);
-        logger.info("SoA:: userDetails-> " + userDetails);
+        log.info("DaoAuthenticationProvider initializing with username {} and password {}", username, password);
+
+        UserDetails userDetails = userService.loadUserByUsername(username);
         if(userDetails!=null){
             if(passwordEncoder.matches(password, userDetails.getPassword())){
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password, userDetails.getAuthorities());
-                return authenticationToken;
+                return new UsernamePasswordAuthenticationToken(username, password, userDetails.getAuthorities());
             }
         }
         throw new BadCredentialsException("Username or password is not correct!!");

@@ -3,33 +3,27 @@ package com.astrodust.springsecurity.security;
 import com.astrodust.springsecurity.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class UserDetailsImp implements UserDetails {
+    @Serial
     private static final long serialVersionUID = 1L;
-
-    private static final Logger logger = LoggerFactory.getLogger(UserDetailsImp.class);
 
     @Getter
     private int id;
-
-    private String username;
-
+    private final String username;
     private String email;
-
     @JsonIgnore
     private String password;
-
-    private Collection<? extends GrantedAuthority> authorities;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImp(int id, String username, String email, String password,
             Collection<? extends GrantedAuthority> authorities) {

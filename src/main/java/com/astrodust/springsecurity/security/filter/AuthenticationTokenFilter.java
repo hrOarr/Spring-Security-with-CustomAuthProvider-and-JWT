@@ -1,10 +1,12 @@
-package com.astrodust.springsecurity.security;
+package com.astrodust.springsecurity.security.filter;
 
-import com.astrodust.springsecurity.service.UserDetailsServiceImp;
+import com.astrodust.springsecurity.security.JwtUtils;
+import com.astrodust.springsecurity.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,18 +25,20 @@ import java.io.IOException;
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
-    private final UserDetailsServiceImp userDetailsService;
+    private final UserService userService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        log.info("SoA:: Filter method");
+        log.info("Authentication Filter method");
         try {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                String username = jwtUtils.getUserNameFromJwtToken(jwt);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                // 3 params constructor which set
+                String username = jwtUtils.getUsernameFromJwtToken(jwt);
+                UserDetails userDetails = userService.loadUserByUsername(username);
+                // 3 params constructor
                 // it sets super.setAuthenticated(true) in that constructor.
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
@@ -49,9 +53,9 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
     }
 
     private String parseJwt(HttpServletRequest request) {
-        String headerAuth = request.getHeader("Authorization");
-        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7);
+        String authToken = request.getHeader("authorization");
+        if (StringUtils.hasText(authToken) && authToken.startsWith("Bearer ")) {
+            return authToken.substring(7);
         }
         return null;
     }

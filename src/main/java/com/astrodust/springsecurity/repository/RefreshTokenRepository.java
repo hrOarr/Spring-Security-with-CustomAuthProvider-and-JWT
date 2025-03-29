@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Integer> {
+public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
     Optional<RefreshToken> findByToken(@Param("token") String token);
-    void deleteByUser(@Param("user") Optional<User> user);
 }

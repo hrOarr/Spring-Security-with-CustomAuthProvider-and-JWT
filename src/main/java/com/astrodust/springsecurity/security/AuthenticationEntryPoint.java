@@ -1,6 +1,5 @@
 package com.astrodust.springsecurity.security;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,7 @@ import java.io.IOException;
 public class AuthenticationEntryPoint implements org.springframework.security.web.AuthenticationEntryPoint {
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException {
         log.info("AuthenticationEntryPoint-> Unauthorized------------------->");
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }

@@ -1,8 +1,7 @@
 package com.astrodust.springsecurity.security;
 
 import com.astrodust.springsecurity.entity.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,23 +13,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class GoogleCloudAuthenticationProvider implements AuthenticationProvider {
 
-    private final static Logger logger = LoggerFactory.getLogger(GoogleCloudAuthenticationProvider.class);
-
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        logger.info("SoA:: I am GoogleCloudProvider");
         String username = authentication.getName();
         String password = String.valueOf(authentication.getCredentials());
+        log.info("GoogleCloudProvider initializing with username {} and password {}", username, password);
 
         // We fetch user from Google API "in theory"
         User user = getUserFromGoogleCloud(username, password);
         if (user != null) {
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(username, password, new ArrayList<>());
-            return authenticationToken;
+            return new UsernamePasswordAuthenticationToken(username, password, new ArrayList<>());
         }
         throw new BadCredentialsException("Error!!");
     }

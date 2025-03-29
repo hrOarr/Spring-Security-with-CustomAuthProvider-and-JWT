@@ -3,8 +3,7 @@ package com.astrodust.springsecurity;
 import com.astrodust.springsecurity.entity.Role;
 import com.astrodust.springsecurity.entity.User;
 import com.astrodust.springsecurity.enums.RoleEnum;
-import com.astrodust.springsecurity.service.interfaces.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.astrodust.springsecurity.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,10 +12,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
-public class SpringsecurityApplication {
+public class SpringSecurityApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringsecurityApplication.class, args);
+        SpringApplication.run(SpringSecurityApplication.class, args);
     }
 
     @Bean

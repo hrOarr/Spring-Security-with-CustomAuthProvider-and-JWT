@@ -6,12 +6,10 @@ import com.astrodust.springsecurity.dto.RefreshTokenDto;
 import com.astrodust.springsecurity.entity.RefreshToken;
 import com.astrodust.springsecurity.exception.RefreshTokenException;
 import com.astrodust.springsecurity.security.JwtUtils;
-import com.astrodust.springsecurity.service.interfaces.RefreshTokenService;
+import com.astrodust.springsecurity.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +39,7 @@ public class AuthenticationController {
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwtToken = jwtUtils.generateJwtToken(authentication);
+        String jwtToken = jwtUtils.generateJwtToken((String) authentication.getPrincipal());
 
         String username = (String) authentication.getPrincipal();
         RefreshToken refreshToken = refreshTokenService.generate(username);
@@ -58,12 +56,11 @@ public class AuthenticationController {
     @PostMapping(value = "/refresh-token")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenDto refreshTokenDto) {
         String refreshToken = refreshTokenDto.getRefreshToken();
-        log.info("SoA:: I am Refresh");
         return refreshTokenService.findByToken(refreshToken)
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
-                    String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+                    String token = jwtUtils.generateJwtToken(user.getUsername());
                     JSONObject jsonObject = new JSONObject();
                     RefreshTokenDto result = new RefreshTokenDto();
                     result.setAccessToken(token);

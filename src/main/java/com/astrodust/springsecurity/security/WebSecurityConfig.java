@@ -1,15 +1,17 @@
 package com.astrodust.springsecurity.security;
 
+import com.astrodust.springsecurity.security.filter.AuthenticationTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -24,7 +26,6 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(
-         securedEnabled = true,
         prePostEnabled = true
         // jsr250Enabled = true,
         // prePostEnabled = true
@@ -32,7 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    private final JwtAuthenticationProvider jwtAuthenticationProvider;
+    private final DaoAuthenticationProvider daoAuthenticationProvider;
     private final GoogleCloudAuthenticationProvider googleCloudAuthenticationProvider;
 
     @Value("${spring.h2.console.path}")
@@ -57,9 +58,8 @@ public class WebSecurityConfig {
     };
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        return authenticationManagerBuilder.authenticationProvider(jwtAuthenticationProvider)
-                .authenticationProvider(googleCloudAuthenticationProvider).build();
+    public AuthenticationManager authenticationManager() {
+        return new ProviderManager(List.of(googleCloudAuthenticationProvider, daoAuthenticationProvider));
     }
 
     @Bean
@@ -76,7 +76,7 @@ public class WebSecurityConfig {
                         .headers(httpSecurityHeadersConfigurer ->
                                 httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-                .authenticationProvider(jwtAuthenticationProvider).authenticationProvider(googleCloudAuthenticationProvider)
+                .authenticationProvider(daoAuthenticationProvider).authenticationProvider(googleCloudAuthenticationProvider)
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
@@ -91,5 +91,12 @@ public class WebSecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.debug(true)
+                .ignoring()
+                .requestMatchers("/css/**", "/js /**", "/img/**", "/lib/**", "/favicon.ico");
     }
 }

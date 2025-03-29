@@ -4,7 +4,6 @@ import com.astrodust.springsecurity.entity.RefreshToken;
 import com.astrodust.springsecurity.exception.RefreshTokenException;
 import com.astrodust.springsecurity.repository.RefreshTokenRepository;
 import com.astrodust.springsecurity.repository.UserRepository;
-import com.astrodust.springsecurity.service.interfaces.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class RefreshTokenServiceImp implements RefreshTokenService {
+public class RefreshTokenService {
 
     @Value("${app.jwtRefreshExpirationMs}")
     private Long refreshTokenDuration;
@@ -23,12 +22,10 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
 
-    @Override
     public Optional<RefreshToken> findByToken(String token) {
         return refreshTokenRepository.findByToken(token);
     }
 
-    @Override
     public RefreshToken generate(String username) {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(userRepository.findByUsername(username));
@@ -37,7 +34,6 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
         return refreshTokenRepository.save(refreshToken);
     }
 
-    @Override
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
