@@ -3,7 +3,7 @@
 </p>
 <p align="center"><h1 align="center">SPRING-SECURITY-WITH-CUSTOMAUTHPROVIDER-AND-JWT</h1></p>
 <p align="center">
-	<em>This repository covers JWT token-based authentication to access/modify protected resources. It also has the implementation for custom authentication provider (ex. google). Whenever access token becomes expired, client can get another access token with the help of refresh-token technique.</em>
+	<em>Secure, Scalable, and Flexible Authentication System</em>
 </p>
 <p align="center">
 	<img src="https://img.shields.io/github/license/hrOarr/Spring-Security-with-CustomAuthProvider-and-JWT?style=default&logo=opensourceinitiative&logoColor=white&color=0080ff" alt="license">
@@ -20,30 +20,50 @@
 
 ##  Table of Contents
 
-- [ Overview](#-overview)
+- [ Introduction](#-Introduction)
 - [ Features](#-features)
 - [ Project Structure](#-project-structure)
 - [ Getting Started](#-getting-started)
     - [ Prerequisites](#-prerequisites)
     - [ Installation](#-installation)
-    - [ Usage](#-usage)
-    - [ Testing](#-testing)
-- [ Project Roadmap](#-project-roadmap)
 - [ Contributing](#-contributing)
-- [ License](#-license)
 - [ Acknowledgments](#-acknowledgments)
 
 ---
 
-##  Overview
+##  Introduction
 
-<code>❯ REPLACE-ME</code>
+In modern applications, securing APIs and user authentication is a crucial aspect of system design. This project implements **Spring Security with JWT (JSON Web Token) authentication**, supporting multiple authentication providers.
 
 ---
 
 ##  Features
+### 1. Multiple Authentication Providers
+- **DAO Authentication Provider** – Authenticates users from the database (username & password).
+- **Custom Authentication Provider** – Supports additional authentication mechanisms
 
-<code>❯ REPLACE-ME</code>
+### 2. JWT-Based Authentication
+- Implements **stateless authentication** using **JSON Web Tokens (JWT)**.
+- Uses **signed JWTs** to prevent tampering.
+- Supports **token expiration & refresh mechanisms**.
+
+### 3. Secure API Authorization
+- **Role-based access control (RBAC)** for different user roles.
+- Uses **JWT claims** to determine access permissions.
+- Protects API endpoints with **Spring Security filters**.
+
+### 4. Stateless and Scalable Security
+- No session storage required (**session-less authentication**).
+- Works well with **microservices & distributed systems**.
+- API requests include JWT in **Authorization Header (`Bearer <token>`)**.
+
+### 6. CSRF Protection
+- Eliminates **CSRF (Cross-Site Request Forgery) risks** by avoiding cookies.
+
+### 7. Security Best Practices
+- **BCrypt password hashing** for user credentials.
+- Implements **refresh token mechanism** for secure session extension.
+- Handles **invalid or expired JWT tokens gracefully**.
 
 ---
 
@@ -65,9 +85,11 @@
 
 ###  Prerequisites
 
-Before getting started with Spring-Security-with-CustomAuthProvider-and-JWT, ensure your runtime environment meets the following requirements:
+Before getting started with Spring-Security-with-CustomAuthProvider-and-JWT, ensure you meet the following requirements:
 
 - **Programming Language:** Java
+- **Frameworks:** Spring Boot
+- **Project Management Tools:** Maven
 
 
 ###  Installation
@@ -86,32 +108,8 @@ Install Spring-Security-with-CustomAuthProvider-and-JWT using one of the followi
 ❯ cd Spring-Security-with-CustomAuthProvider-and-JWT
 ```
 
-3. Install the project dependencies:
-
-echo 'INSERT-INSTALL-COMMAND-HERE'
-
-
-
-###  Usage
-Run Spring-Security-with-CustomAuthProvider-and-JWT using the following command:
-echo 'INSERT-RUN-COMMAND-HERE'
-
-###  Testing
-Run the test suite using the following command:
-echo 'INSERT-TEST-COMMAND-HERE'
-
----
-##  Project Roadmap
-
-- [X] **`Task 1`**: <strike>Implement feature one.</strike>
-- [ ] **`Task 2`**: Implement feature two.
-- [ ] **`Task 3`**: Implement feature three.
-
----
-
 ##  Contributing
 
-- **💬 [Join the Discussions](https://github.com/hrOarr/Spring-Security-with-CustomAuthProvider-and-JWT/discussions)**: Share your insights, provide feedback, or ask questions.
 - **🐛 [Report Issues](https://github.com/hrOarr/Spring-Security-with-CustomAuthProvider-and-JWT/issues)**: Submit bugs found or log feature requests for the `Spring-Security-with-CustomAuthProvider-and-JWT` project.
 - **💡 [Submit Pull Requests](https://github.com/hrOarr/Spring-Security-with-CustomAuthProvider-and-JWT/blob/main/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
 
