@@ -14,22 +14,44 @@
 
 <br>
 
-##  Table of Contents
+## Table of Contents
 
-- [ Introduction](#-Introduction)
-- [ Features](#-features)
-- [ Project Structure](#-project-structure)
-- [ Getting Started](#-getting-started)
-    - [ Prerequisites](#-prerequisites)
-    - [ Installation](#-installation)
-- [ Contributing](#-contributing)
-- [ Acknowledgments](#-acknowledgments)
+- [Introduction](#introduction)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+- [Contributing](#contributing)
+- [Acknowledgments](#acknowledgments)
 
 ---
 
 ##  Introduction
 
 In modern applications, securing APIs and user authentication is a crucial aspect of system design. This project implements **Spring Security with JWT (JSON Web Token) authentication**, supporting multiple authentication providers.
+
+#### About Cryptography, JWT, Encryption Algorithms
+##### 1. Cryptography in Security
+Cryptography is the practice of securing communication and data through encoding and decoding techniques. Common cryptographic techniques:
+- Hashing → Irreversible transformation (e.g., SHA-256, bcrypt)
+- Encryption → Reversible encoding (e.g., AES, RSA)
+- Digital Signatures → Ensure authenticity using public/private keys
+
+##### 2. JSON Web Token (JWT)
+A JWT consists of three parts, separated by dots (.):
+```
+Header.Payload.Signature
+```
+**Header** – Contains metadata like algorithm (HS256, RS256) and token type.
+
+**Payload** – Holds claims (user info, roles, expiry time, etc.).
+
+**Signature** – Secures the token by verifying its integrity.
+
+##### 3. Encryption Algorithms
+- Symmetric Encryption (Single Key)
+- Asymmetric Encryption (Public & Private Keys)
 
 ---
 
@@ -65,7 +87,7 @@ In modern applications, securing APIs and user authentication is a crucial aspec
 
 ##  Project Structure
 
-```sh
+```
 └── Spring-Security-with-JWT/
     ├── README.md
     ├── SpringSecurity.iml
@@ -106,7 +128,7 @@ Install Spring-Security-with-JWT using one of the following methods:
 
 ##  Contributing
 
-- **🐛 [Report Issues](https://github.com/hrOarr/Spring-Security-with-JWT/issues)**: Submit bugs found or log feature requests for the `Spring-Security-with-CustomAuthProvider-and-JWT` project.
+- **🐛 [Report Issues](https://github.com/hrOarr/Spring-Security-with-JWT/issues)**: Submit bugs found or log feature requests for the `Spring-Security-with-JWT` project.
 - **💡 [Submit Pull Requests](https://github.com/hrOarr/Spring-Security-with-JWT/blob/main/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
 
 <details closed>
@@ -149,6 +171,7 @@ Install Spring-Security-with-JWT using one of the following methods:
 ##  Acknowledgments
 
 - https://www.toptal.com/spring/spring-security-tutorial
+- https://medium.com/@tericcabrel/implement-jwt-authentication-in-a-spring-boot-3-application-5839e4fd8fac
 
 ---
 
