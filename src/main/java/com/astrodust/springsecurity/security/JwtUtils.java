@@ -1,6 +1,7 @@
 package com.astrodust.springsecurity.security;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ public class JwtUtils {
     private int jwtExpiration;
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
     public String generateJwtToken(String subject) {
